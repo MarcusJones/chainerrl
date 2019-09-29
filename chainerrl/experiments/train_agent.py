@@ -46,13 +46,18 @@ def train_agent(agent, env, steps, outdir, checkpoint_freq=None,
         agent.t = step_offset
 
     start_time = time.time()
+    last_chunk_end_time =start_time
+    chunk = 1000
 
     episode_len = 0
     try:
         while t < steps:
-
-            if t % 100000:
-                logger.critical("STEPS: {} / {}, {} elapsed".format(t, steps, time.time()-start_time ))
+            # print(t, t % 1000 == 0)
+            if t % chunk == 0:
+                now = time.time()
+                chunk_elapsed = now - last_chunk_end_time
+                last_chunk_end_time = now
+                logger.critical("STEPS: {} / {}, {:0.0f}s total elapsed {:0.0f} for this chunk of {}".format(t, steps, now-start_time, chunk_elapsed, chunk ))
 
             # a_t
             action = agent.act_and_train(obs, r)
