@@ -12,6 +12,7 @@ from chainerrl.experiments.evaluator import Evaluator
 from chainerrl.experiments.evaluator import save_agent
 from chainerrl.misc.ask_yes_no import ask_yes_no
 from chainerrl.misc.makedirs import makedirs
+import time
 
 
 def save_agent_replay_buffer(agent, t, outdir, suffix='', logger=None):
@@ -44,9 +45,14 @@ def train_agent(agent, env, steps, outdir, checkpoint_freq=None,
     if hasattr(agent, 't'):
         agent.t = step_offset
 
+    start_time = time.time()
+
     episode_len = 0
     try:
         while t < steps:
+
+            if t % 100000:
+                logger.critical("STEPS: {} / {}, {} elapsed".format(t, steps, time.time()-start_time ))
 
             # a_t
             action = agent.act_and_train(obs, r)
